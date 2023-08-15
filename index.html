@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rick and Morty API</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Rick and Morty Characters</h1>
+
+    <label for="filterInput">Filter:</label>
+    <input type="text" id="filterInput">
+    
+    <button id="filterButton">Apply Filter</button>
+
+    <table id="characterTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        $(document).ready(function () {
+            var characters = [];
+
+            // Função para preencher a tabela com os dados
+            function fillTable(data) {
+                var table = $('#characterTable tbody');
+                table.empty(); // Limpa os dados anteriores
+
+                $.each(data, function (index, character) {
+                    table.append('<tr><td>' + character.id + '</td><td>' + character.name + '</td><td>' + character.status + '</td></tr>');
+                });
+            }
+
+            // Função para aplicar o filtro
+            function applyFilter() {
+                var filterValue = $('#filterInput').val().toLowerCase();
+
+                var filteredCharacters = characters.filter(function (character) {
+                    console.log(character)
+                    return character.name.toLowerCase().includes(filterValue) ||
+                           character.id == filterValue ||
+                           character.status.toLowerCase().includes(filterValue) ||
+                           character.gender.toLowerCase().includes(filterValue) ||
+                           character.species.toLowerCase().includes(filterValue);
+                });
+
+                fillTable(filteredCharacters);
+            }
+
+            $.ajax({
+                url: 'https://rickandmortyapi.com/api/character',
+                method: 'GET',
+                success: function (data) {
+                    characters = data.results;
+                    fillTable(characters);
+                }
+            });
+
+            $('#filterButton').click(function () {
+                applyFilter();
+            });
+
+            // Aplica o filtro ao pressionar a tecla Enter no campo de entrada
+            $('#filterInput').on('keyup', function (event) {
+                if (event.key === 'Enter') {
+                    applyFilter();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
